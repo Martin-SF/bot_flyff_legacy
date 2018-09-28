@@ -11,7 +11,7 @@ if (first=1) {
 	return
 }
 */
-sendinput, {Lbutton up}
+Send, {Lbutton up}
 MouseGetPos, xa, ya, win
 
 wakelite(emu_wintitle)
@@ -64,7 +64,7 @@ loop {
 	if (ErrorLevel = 0) {
 		log("pink found, uebrige Veruche/n = " . n)
 		
-		sendinput, {Lbutton up}
+		Send, {Lbutton up}
 		specialClickBS(Px, Py, 0 ,0) ;SendEvent {Click 100, 200}
 		WinWaitActivate("ahk_id " win)
 		mousemove, xa, ya

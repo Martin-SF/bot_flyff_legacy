@@ -120,6 +120,32 @@ if (lvl=3 and lvl2=3) {
 	SetTimer, buch, % -random(1000*60*14, 1000*60*16)
 return
 
+changetoinv() {
+	humansleep(1300)
+	clickBS(1860, 57, 20, 20) ;close
+	humansleep(1300)
+	clickBS(1860, 57, 20, 20) ;close
+	humansleep(1300)
+	
+	/* clickBS(1722, 950, 20, 20) ;autu
+	humansleep(1300)
+	clickBS(1098, 965, 20, 20) ;beute einmst
+	humansleep(1300)
+	clickBS(690, 347, 10, 10) ;gew. toggle
+	humansleep(1300)
+	clickBS(1322, 225, 20, 20) ;schlieﬂen mini fenster
+	humansleep(1300)
+	clickBS(1661, 54, 20, 20) ;schlieﬂen uto
+	humansleep(1300) 
+	*/
+	
+	clickBS(1371, 381, 40, 40) ;in die ebene klicken
+	humansleep(1300)
+	clickBS(1389, 975, 20, 20) ;beutel
+	humansleep(1300)
+
+}
+
 
 /*
 buch:
