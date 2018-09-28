@@ -6,7 +6,7 @@ buch:
 	;SetTimer, sellitemsbuch, delete
 	wakeup(351, 299, emu_wintitle)
 
-	;SetTimer, sellitemsbuch, % -frandom(200000, 400000)
+	;SetTimer, sellitemsbuch, % -random(200000, 400000)
 	;SetTimer, sellitemsbuch, 120000
 	
 	/*
@@ -115,9 +115,9 @@ buch:
 if (lvl=3 and lvl2=3) {
 	log("tiere voll, change auf only verkaufen")
 	changetoinv()
-	SetTimer, sellitems, % -frandom(200000, 400000)
+	SetTimer, sellitems, % -random(200000, 400000)
 } else
-	SetTimer, buch, % -frandom(1000*60*14, 1000*60*16)
+	SetTimer, buch, % -random(1000*60*14, 1000*60*16)
 return
 
 
@@ -126,7 +126,7 @@ buch:
 	;SetTimer, sellitemsbuch, delete
 	wakeup(351, 299)
 
-	;SetTimer, sellitemsbuch, % -frandom(200000, 400000)
+	;SetTimer, sellitemsbuch, % -random(200000, 400000)
 	;SetTimer, sellitemsbuch, 120000
 	
 	/*
@@ -234,9 +234,9 @@ buch:
 if (lvl=3 and lvl2=3) {
 	log("tiere voll, change auf only verkaufen")
 	changetoinv()
-	SetTimer, sellitems, % -frandom(200000, 400000)
+	SetTimer, sellitems, % -random(200000, 400000)
 } else
-	SetTimer, buch, % -frandom(1000*60*14, 1000*60*16)
+	SetTimer, buch, % -random(1000*60*14, 1000*60*16)
 return
 */
 

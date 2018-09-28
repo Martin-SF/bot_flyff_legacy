@@ -7,7 +7,7 @@ gamewin_goto(loc_tar, loc_curr := 0) {
 		BlockInput, off
 		loc_curr_run := current_location()
 		if (loc_curr_run != loc_tar) { ;extra verifizierung ob "richtig rausgekommen" bzw. endseite komplett geladen ist.
-			BlockInput, off
+			BlockInput, off ;!!!!!!!!!!!!!!!!!!! hier gibt es komische fehler
 			;msgbox, %loc_curr_run% != %loc_tar% (loc_curr = %loc_curr%)
 		}
 		BlockInput, off
@@ -34,6 +34,8 @@ gamewin_goto(loc_tar, loc_curr := 0) {
 	*müll in old_functions,bot ablagern
 	
 	* konsistenz von blockinput eingaben
+	
+	*try und catch
 	*/
 }
 
@@ -48,27 +50,27 @@ gamewin_goto_click(loc_curr, loc_tar, sl := 200) {
 	}
 	if (errorlevel != 0) {
 		if (errorlevel=2) {
-			buchname_tar := SubStr(loc_tar, 1 , StrLen(loc_tar)-5) ;aka "loc_tierbuch ohne zahlen ud site
-			buchname_curr := SubStr(loc_curr, 1 , StrLen(loc_curr)-5) ;aka "loc_tierbuch ohne zahlen ud site
-			log("buchname_tar= " buchname_tar)
-			log("buchname_curr= " buchname_curr)
+			;buchname_tar := SubStr(loc_tar, 1 , StrLen(loc_tar)-5) ;aka "loc_tierbuch ohne zahlen ud site
+			;buchname_curr := SubStr(loc_curr, 1 , StrLen(loc_curr)-5) ;aka "loc_tierbuch ohne zahlen ud site
+			;log("buchname_tar= " buchname_tar)
+			;log("buchname_curr= " buchname_curr)
 			
 			/*
 			else if ((loc_curr = "loc_tierbuchsite") or (loc_curr = "loc_orbswapsite")) 
 				return gamewin_goto(buchname, loc_curr)
 			else if (InStr(loc_tar, "loc_tierbuchsite") or InStr(loc_tar, "loc_orbswapsite"))
 				return gamewin_goto(buchname, loc_curr)
-			
-			
 			*/
+			
+			
 			if (InStr(loc_tar, "loc_tierbuchsite") or InStr(loc_tar, "loc_orbswapsite"))
-				return gamewin_goto(buchname_tar, loc_curr)
+				return gamewin_goto(SubStr(loc_tar, 1 , StrLen(loc_tar)-5), loc_curr) ;aka "loc_tierbuch ohne zahlen ud site
 			
 			else if ((loc_tar = "loc_tierbuch") or (loc_tar = "loc_orbswap"))
 				return gamewin_goto("loc_leiste", loc_curr)
 	
 			else if ( (loc_tar = "loc_leiste") and ( InStr(loc_curr, "loc_tierbuchsite") or InStr(loc_curr, "loc_orbswapsite") ) )
-				return gamewin_goto(buchname_curr, loc_curr)
+				return gamewin_goto(SubStr(loc_curr, 1 , StrLen(loc_curr)-5), loc_curr) ;aka "loc_tierbuch ohne zahlen ud site
 			else if ( (loc_tar = "loc_leiste") and ( (loc_curr = "loc_zerlegen") or (loc_curr = "loc_beutel") ) )
 				return gamewin_goto("loc_screen", loc_curr)
 			
@@ -192,6 +194,8 @@ gamewin_goto_click(loc_curr, loc_tar, sl := 200) {
 	
 	return loc_tar
 	
+	/*
+	
 	if (InStr(loc, "loc_screen_loc_beutel")) ;;
 		return "loc_beutel"
 	if (InStr(loc, "loc_beutel_loc_screen")) { ;;
@@ -230,6 +234,8 @@ gamewin_goto_click(loc_curr, loc_tar, sl := 200) {
 		return "loc_orbswapsite2"
 	if (InStr(loc, "loc_orbswap_loc_orbswapsite3"))
 		return "loc_orbswapsite3"
+	*/
+	
 }
 
 current_location(sl := 200, n := 20) {
@@ -259,40 +265,32 @@ current_location(sl := 200, n := 20) {
 			return "loc_orbswapsite2"
 		if (gamewin_search_boo("*" n " pictures\loc_orbswapsite3.png")=0)
 			return "loc_orbswapsite3"
-		
-		
-		if (gamewin_search_boo("*" n " pictures\loc_beutel.png")=0) {
-			;sleep 200
-			return "loc_beutel"
-		}
-		
-		if (gamewin_search_boo("*" n " pictures\loc_screen.png")=0) {
-			;sleep 1000
-			return "loc_screen"
-		}
-	}
 	
+		if (gamewin_search_boo("*" n " pictures\loc_beutel.png")=0) 
+			return "loc_beutel"
+		if (gamewin_search_boo("*" n " pictures\loc_screen.png")=0) 
+			return "loc_screen"
+	}
 	
 	blockinput, off
 	msgbox, 0, ,  location not found `n`nclosing...
-	exitapp 
-	
+	exitapp
 }
 
 gamewin_search_boo(options, waittime := 1) {
-	t := A_TickCount
 	errorlevel := 1
-	while ((errorlevel=1) and (A_TickCount-t <= waittime)) {
-		log("current_location: " errorlevel " und " A_TickCount " " t)
+	t := A_TickCount
+	while ((errorlevel=1) and (A_TickCount-t <= waittime)) 
 		imagesearch, xq, yq, 0, 0, 1284, 752, %options%
-	}
+	
+	log("gamewin_search_boo: Errorlevel = " errorlevel " und " A_TickCount " " t)
 	
 	if (errorlevel=2) {
 		blockinput, off
 		msgbox, 0, ,  errorlevel = 2 check file (%options%) `n`nclosing...
 		exitapp
-	}
-	return Errorlevel
+	} else 
+		return Errorlevel
 	
 	/*
 	`nErrorLevel = 0 if the image was found in the specified region 
@@ -300,6 +298,22 @@ gamewin_search_boo(options, waittime := 1) {
 	`nErrorLevel = 2 if there was a problem that prevented the command from conducting the search (such as failure to open the image file or a badly formatted option).
 	*/
 }
+
+
+
+clickBS(x, y, varx, vary, sl1 := 1300,sl2 := 700) {
+	humansleep(500)
+	specialClickBS((x+random(-varx,varx)), (y+random(-vary,vary)), sl1, sl2)
+}
+
+specialClickBS(x,y,sl1 := 1300,sl2 := 700) {
+	MouseMove,x,y
+	humansleep(sl1)
+	SendInput {LButton down}
+	humansleep(sl2)
+	SendInput {LButton up}
+}
+
 
 wakeup(x, y, wintitle, sl := 1500, loops := 4) {
 	loop %loops% {
@@ -310,23 +324,9 @@ wakeup(x, y, wintitle, sl := 1500, loops := 4) {
 	soundplay *-1
 }
 
-wakelite(wintitle){
+wakelite(wintitle, sl := 350){
 	WinWaitActivate(wintitle)
-	humansleep(350)
-}
-
-
-clickBS(x, y, varx, vary, sl1 := 1300,sl2 := 700){
-	
-	;IniRead, x ,staemmeIntervall.ini,coords, time%i%x
-	;IniRead, y ,staemmeIntervall.ini,coords, time%i%y
-	;setActiveDS()
-	
-	x += frandom(-varx,varx)
-	y += frandom(-vary,vary)
-	
-	humansleep(500)
-	specialClickBS(x, y, sl1, sl2)
+	humansleep(sl)
 }
 
 WinWaitActivate(wintitle) {
@@ -334,48 +334,21 @@ WinWaitActivate(wintitle) {
 	WinWaitActive, %wintitle%
 }
 
-specialClickBS(x,y,sl1 := 1300,sl2 := 700){
-	MouseMove,x,y
-	humansleep(sl1)
-	SendInput {LButton down}
-	humansleep(sl2)
-	SendInput {LButton up}
+
+humansleep(a) {
+	sleep random(a*0.7, a*1.3)
 }
 
-
-
-gamewin_search_coord(options) {
-	imagesearch, xq, yq, 0, 0, 1284, 752, %options%
-	return Errorlevel
-	
-	/*
-	`nErrorLevel = 0 if the image was found in the specified region 
-	`nErrorLevel = 1 if it was not found
-	`nErrorLevel = 2 if there was a problem that prevented the command from conducting the search (such as failure to open the image file or a badly formatted option).
-	*/
-}
-
-humansleep(a){ 																																		;TESTEN
-	l:=a-(a*0.3)
-	j:=a+(a*0.3)
-	random, v, l, j
-	sleep v
-}
-
-rangesleep(l, j){
-	random, v, l, j
-	sleep v
+rangesleep(l, j) {
+	sleep random(l, j)
 }
 
 log(s) {
-	time=%a_dd%/%a_mm%/%a_yyyy% %a_hour%:%a_min%:%a_sec%
+	time = %a_dd%/%a_mm%/%a_yyyy% %a_hour%:%a_min%:%a_sec%
 	FileAppend,% "`n" . time . " " . s , flyff_bot.log
 }
 
-
-frandom(min, max) {
+random(min, max) {
 	Random, OutputVar, min, max
 	return OutputVar
 }
-
-

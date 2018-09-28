@@ -22,14 +22,14 @@ if not A_IsAdmin {
 	Exitapp
 }
 #NoEnv
-#SingleInstance force
+#SingleInstance, force
 #Warn
-SetBatchLines -1
-ListLines Off
-SendMode Input
-SetWinDelay -1
-SetControlDelay -1
-SetMouseDelay -1
+SetBatchLines, -1
+ListLines, Off
+SendMode, InputThenPlay
+SetWinDelay, -1
+SetControlDelay, -1
+SetMouseDelay, -1
 SetDefaultMouseSpeed, 0
 
 lvl := 2
@@ -90,19 +90,21 @@ sellitems:
 	MouseGetPos, xa, ya, win
 
 	WinWaitActivate(emu_wintitle) ;wakelite(emu_wintitle)
-	
 	log("sellitems")
-	gamewin_goto("loc_zerlegen") 
+	sleep 500
+	;gamewin_goto("loc_zerlegen") 
 	;gamewin_goto("loc_beutel")
 	;wakeup(662, 441, emu_wintitle)
 	;clickBS(1289, 980, 45, 15) ;Zerlegen-Fenster-Button ;surface
-	;clickBS(865, 679, 45, 15, 0, 0) ;Zerlegen-Fenster-Button ;win10
-	;humansleep(200) ;warten auf öffnen
+	clickBS(865, 679, 45, 15, 50, 50) ;Zerlegen-Fenster-Button ;win10
+	humansleep(200) ;warten auf öffnen
 	
 	if (gamewin_search_boo("*10 pictures/sellitems_empty_slots.png")=0)
-		res := "empty"
+		res := "empty" ;direkt die if anweisung von unten...
 	else 
 		res := "filled"
+	
+	;funktioniert das blockinput?!?
 	
 	/*
 	tmp := A_TickCount
@@ -128,10 +130,10 @@ sellitems:
 		clickBS(865, 679, 45, 15, 0, 0) ;Zerlegen-Fenster-Button
 	} else if (res="filled") {
 		log("verkauft, Errorlevel = " res)
-		clickBS(470, 551, 5, 5, 100, 100) ;grün
-		clickBS(255, 596, 5, 5, 100, 100) ;blau
-		clickBS(469, 673, 45, 15, 100, 100) ;Zerlegen-Button
-		clickBS(651, 553, 35, 15, 100, 100) ;mini diaglog weg
+		clickBS(470, 551, 5, 5, 50, 50) ;grün
+		clickBS(255, 596, 5, 5, 50, 50) ;blau
+		clickBS(469, 673, 45, 15, 50, 50) ;Zerlegen-Button
+		clickBS(651, 553, 35, 15, 50, 50) ;mini diaglog weg
 	} else {
 		MsgBox, 16, , sellitems`, error, 2
 	}
@@ -140,7 +142,7 @@ sellitems:
 	WinWaitActivate("ahk_ID " win)
 	mousemove, xa, ya
 	BlockInput, off
-	SetTimer, sellitems, % -frandom(1000*60*8, 1000*60*12)
+	SetTimer, sellitems, % -random(1000*60*8, 1000*60*12)
 return
 
 changetoinv() {

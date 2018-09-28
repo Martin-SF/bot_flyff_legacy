@@ -65,7 +65,7 @@ loop {
 		log("pink found, uebrige Veruche/n = " . n)
 		
 		sendinput, {Lbutton up}
-		specialClickBS(Px, Py, 0 ,0)
+		specialClickBS(Px, Py, 0 ,0) ;SendEvent {Click 100, 200}
 		WinWaitActivate("ahk_id " win)
 		mousemove, xa, ya
 		BlockInput, off
@@ -74,6 +74,7 @@ loop {
 		if (n=0)
 			break
 		sleep 136000
+		;setimer
 		
 		
 		MouseGetPos, xa, ya, win
@@ -81,7 +82,6 @@ loop {
 }
 msgbox, wolken ready
 return
-
 
 happywolkenhour() {
 	if (A_Hour=13 or A_Hour=14 or A_Hour=23 or A_Hour=0)
@@ -95,7 +95,7 @@ wakewolken := 0
 settimer, wait_for_wakewolken, 250
 
 wakewolken:
-wakeup(975, 170, emu_wintitle, frandom(0, 400), 3) ;wakeup über wolke
+wakeup(975, 170, emu_wintitle, random(0, 400), 3) ;wakeup über wolke
 wakewolken := 1
 return
 
@@ -107,7 +107,7 @@ settimer, wait_for_wakewolken, delete
 wolken:
 clickBS(951, 410 ,10 , 10) ;wolke (bisschen über charakter
 
-SetTimer, wolken, % -frandom(137*1000, 139*1000)
-SetTimer, wakewolken, % -frandom(125*1000, 127*1000)
+SetTimer, wolken, % -random(137*1000, 139*1000)
+SetTimer, wakewolken, % -random(125*1000, 127*1000)
 return
 
