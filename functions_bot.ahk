@@ -4,13 +4,23 @@ gamewin_goto(loc_tar, loc_curr := 0) {
 	if !(InStr(loc_curr, "loc_"))
 		loc_curr := current_location()
 	if (loc_curr=loc_tar) {
-		BlockInput, off
-		loc_curr_run := current_location()
+		;BlockInput, off ;diese blockinbput dürfen erst am richtigen ende stehen
+		
+		loc_curr_run := current_location(loc_tar)
 		if (loc_curr_run != loc_tar) { ;extra verifizierung ob "richtig rausgekommen" bzw. endseite komplett geladen ist.
-			BlockInput, off ;!!!!!!!!!!!!!!!!!!! hier gibt es komische fehler
-			;msgbox, %loc_curr_run% != %loc_tar% (loc_curr = %loc_curr%)
+			;BlockInput, off ;!!!!!!!!!!!!!!!!!!! hier gibt es komische fehler
+			log(loc_curr_run " != " loc_tar " (loc_curr_run != loc_tar)")
+			log("restart: gamewin_goto( " loc_tar " ," loc_curr ")" )
+			static n := 0
+			n+=1
+			if (n=5) {
+				msgbox, %loc_curr_run% != %loc_tar% (loc_curr_run != loc_tar)
+			}
+			gamewin_goto(loc_tar, loc_curr)
+			return
+			
 		}
-		BlockInput, off
+		;BlockInput, off
 		log("reached: " loc_tar)
 		return loc_curr ;loc_curr_run
 	}
@@ -39,7 +49,7 @@ gamewin_goto(loc_tar, loc_curr := 0) {
 	*/
 }
 
-gamewin_goto_click(loc_curr, loc_tar, sl := 200) {
+gamewin_goto_click(loc_curr, loc_tar, sl := 50) {
 	log("gamewin_goto_click: " loc_curr " to " loc_tar)
 	humansleep(sl)
 	loc := loc_curr "_" loc_tar
@@ -84,37 +94,40 @@ gamewin_goto_click(loc_curr, loc_tar, sl := 200) {
 	return loc_tar
 }
 
-current_location(sl := 200, n := 20) {
+current_location(prio_loc := "loc_gibsnicht", sl := 50, n := 20) {
 	humansleep(sl)
+	prio_wait := 500
 	log("currentlocation(" sl ")")
 	t := A_TickCount
 	errorlevel := 1
+	if (prio_loc = "loc_gibsnicht")
+		sleep prio_wait
 	while ((errorlevel=1) and (A_TickCount-t <= 1500)) {
 		;log("current_location: " errorlevel " und " A_TickCount " " t)
 		
 		;array machen oder loc_%num%
 		;liste aus files machen diese packen in array
 		
-		if (gamewin_search_boo("*" n " pictures\loc_leiste.png")=0)
+		if ((gamewin_search_boo("*" n " pictures\loc_leiste.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_leiste")))
 			return "loc_leiste"
-		if (gamewin_search_boo("*" n " pictures\loc_zerlegen.png")=0)
+		else if ((gamewin_search_boo("*" n " pictures\loc_zerlegen.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_zerlegen")))
 			return "loc_zerlegen"
-		if (gamewin_search_boo("*" n " pictures\loc_tierbuch.png")=0)
+		else if ((gamewin_search_boo("*" n " pictures\loc_tierbuch.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_tierbuch")))
 			return "loc_tierbuch"
-		if (gamewin_search_boo("*" n " pictures\loc_tierbuchsite3.png")=0)
+		else if ((gamewin_search_boo("*" n " pictures\loc_tierbuchsite3.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_tierbuchsite3")))
 			return "loc_tierbuchsite3"
-		if (gamewin_search_boo("*" n " pictures\loc_orbswap.png")=0)
+		else if ((gamewin_search_boo("*" n " pictures\loc_orbswap.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_orbswap")))
 			return "loc_orbswap"
-		if (gamewin_search_boo("*" n " pictures\loc_orbswapsite1.png")=0)
+		else if ((gamewin_search_boo("*" n " pictures\loc_orbswapsite1.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_orbswapsite1")))
 			return "loc_orbswapsite1"
-		if (gamewin_search_boo("*" n " pictures\loc_orbswapsite2.png")=0)
+		else if ((gamewin_search_boo("*" n " pictures\loc_orbswapsite2.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_orbswapsite2")))
 			return "loc_orbswapsite2"
-		if (gamewin_search_boo("*" n " pictures\loc_orbswapsite3.png")=0)
+		else if ((gamewin_search_boo("*" n " pictures\loc_orbswapsite3.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_orbswapsite3")))
 			return "loc_orbswapsite3"
 	
-		if (gamewin_search_boo("*" n " pictures\loc_beutel.png")=0)
+		else if ((gamewin_search_boo("*" n " pictures\loc_beutel.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_beutel")))
 			return "loc_beutel"
-		if (gamewin_search_boo("*" n " pictures\loc_screen.png")=0)
+		else if ((gamewin_search_boo("*" n " pictures\loc_screen.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_screen")))
 			return "loc_screen"
 	}
 	
@@ -143,17 +156,19 @@ gamewin_search_boo(options, waittime := 1) {
 
 
 
-clickBS(x, y, varx, vary, sl1 := 1300,sl2 := 700) {
-	humansleep(500)
+clickBS(x, y, varx := 0, vary := 0, sl1 := 50,sl2 := 50, sl3 := 50) {
+	humansleep(sl3)
 	specialClickBS((x+random(-varx,varx)), (y+random(-vary,vary)), sl1, sl2)
 }
 
 specialClickBS(x,y,sl1 := 1300,sl2 := 700) {
 	MouseMove,x,y
 	humansleep(sl1)
-	Send, {LButton down}
+	;Send, {LButton down}
+	Click, down
 	humansleep(sl2)
-	Send, {LButton up}
+	;Send, {LButton up}
+	Click, up
 }
 
 
