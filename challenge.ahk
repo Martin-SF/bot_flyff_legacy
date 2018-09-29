@@ -99,26 +99,3 @@ happywolkenhour() {
 		return true
 	else return false
 }
-
-/*
-swolken:
-wakewolken := 0
-settimer, wait_for_wakewolken, 250
-
-wakewolken:
-wakeup(975, 170, emu_wintitle, random(0, 400), 3) ;wakeup über wolke
-wakewolken := 1
-return
-
-wait_for_wakewolken:
-if wakewolken!=1 ;noch nicht das erste mal gewaked
-	return
-settimer, wait_for_wakewolken, delete
-
-wolken:
-clickBS(951, 410 ,10 , 10) ;wolke (bisschen über charakter
-
-SetTimer, wolken, % -random(137*1000, 139*1000)
-SetTimer, wakewolken, % -random(125*1000, 127*1000)
-return
-
