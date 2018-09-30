@@ -23,6 +23,10 @@ else
 
 	* Erkennung für Tot, dann Tränke einkaufen (Beutel voll beobachten)
 	* dann einfach jagd klicken
+	
+* var für alle imagesearchs untersuchen
+
+* manuel optimize mode wo gegebene umgebung genutzt wird um das programm für alle "sleeps" also s1 oder sl2 zu trainieren, außerdem h*-1 w500 usw.
 */
 
 ;---------------------------------------
@@ -47,9 +51,9 @@ SetDefaultMouseSpeed, 0
 ;lvl := 2
 ;lvl2 := 3
 ;cc := 0
-;first := 1
-last_y := 0
+first := 1
 emu_wintitle := "ahk_class Qt5QWindowIcon"
+n := 0
 ;emu_wintitle := "ahk_exe BlueStacks.exe"
 
 Gui, Add, Button, x30 y40 w100 h30 gsellitems_periodic , sellitems
@@ -57,7 +61,10 @@ Gui, Add, Button, x30 y90 w100 h30 gwolken, wolken
 Gui, Add, Button, x30 y140 w100 h30 gorb_exchange, Orb-Swap
 Gui, Add, Button, x30 y190 w100 h30 +disabled, Tierbauch
 Gui, Show, w165 h289, Flyff Legacy Bot - by Peter Holz
+
+goto, calib_ticks_start
 return
+
 
 ;---------------------------------------
 ;-----------------::HOTKEYS::-----------
@@ -84,8 +91,40 @@ if (winactive("ahk_exe SciTE.exe") or winactive(emu_wintitle)) {
 ;---------------------------------------
 sellitems_periodic:
 	sellitems()
-	SetTimer, sellitems_periodic, % -random(1000*60*4, 1000*60*5)
+	SetTimer, sellitems_periodic, % -random(1000*60*7.6, 1000*60*8)
 return
+
+
+orb_exchange:
+	orb_exchange("loc_orbswapsite3")
+	SetTimer, orb_exchange, % -random(1000*60*4.5, 1000*60*5.5)
+return
+
+
+orb_exchange(loc_world_book) {
+	global emu_wintitle
+	
+	Send, {LButton up}
+	BlockInput, on
+	MouseGetPos, xa, ya, win
+	
+	wakelite(emu_wintitle) ;(emu_wintitle)
+	;Send, {Alt down}{F9 down}{Alt up}{F9 up}
+	log("orb_exchange")
+	
+	orbs_hunt_next(loc_world_book)
+	;sellitems()
+	gamewin_goto(loc_world_book)
+	
+	
+	WinWaitActivate("ahk_ID " win)
+	mousemove, xa, ya
+	blockinput, off
+	
+	;Send, {Alt down}{F9 down}{Alt up}{F9 up}
+}
+return
+
 
 sellitems() {
 	global emu_wintitle
@@ -94,10 +133,8 @@ sellitems() {
 	BlockInput, on
 	MouseGetPos, xa, ya, win
 	
-	WinWaitActivate(emu_wintitle) ;wakelite(emu_wintitle)
-	curr_loc := current_location()
+	wakelite(emu_wintitle)
 	log("sellitems")
-	;sleep 500
 	gamewin_goto("loc_zerlegen") 
 	;gamewin_goto("loc_beutel")
 	;wakeup(662, 441, emu_wintitle)
@@ -118,7 +155,7 @@ sellitems() {
 		MsgBox, 16, , sellitems`, error, 2
 	}
 	
-	gamewin_goto(curr_loc)
+	;gamewin_goto(curr_loc)
 	
 	WinWaitActivate("ahk_ID " win)
 	mousemove, xa, ya

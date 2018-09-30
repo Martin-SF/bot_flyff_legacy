@@ -6,7 +6,7 @@ gamewin_goto(loc_tar, loc_curr := 0) {
 	if (loc_curr=loc_tar) {
 		;BlockInput, off ;diese blockinbput dürfen erst am richtigen ende stehen
 		
-		loc_curr_run := current_location(loc_tar)
+		loc_curr_run := loc_tar ;current_location(loc_tar) !!!!!!!perf. rausgenommen
 		if (loc_curr_run != loc_tar) { ;extra verifizierung ob "richtig rausgekommen" bzw. endseite komplett geladen ist.
 			;BlockInput, off ;!!!!!!!!!!!!!!!!!!! hier gibt es komische fehler
 			log(loc_curr_run " != " loc_tar " (loc_curr_run != loc_tar)")
@@ -56,7 +56,7 @@ gamewin_goto_click(loc_curr, loc_tar, sl := 50) {
 	t := A_TickCount
 	errorlevel := 1
 	while (errorlevel=1 and (A_TickCount-t <= 1500)) {
-		imagesearch, xq, yq, 0, 0, 1284, 752, *85 pictures\goto_%loc%.png ;75 gab fehler bei leiste-> screen
+		imagesearch, xq, yq, 0, 0, 1284, 752, *80 pictures\goto_%loc%.png ;75 gab fehler bei leiste-> screen ;90 hab fehler -> screen to leiste
 	}
 	if (errorlevel != 0) {
 		if (errorlevel=2) {
@@ -89,7 +89,7 @@ gamewin_goto_click(loc_curr, loc_tar, sl := 50) {
 		MsgBox, 0, , error: %errorlevel% `ngoto: %loc%`n closing...
 		exitapp
 	}
-	clickBS(xq, yq, 0, 0, 0, 0) ;var für klicken: with und high von goto_%loc%.png rerausfinden und ab mitte mit var klicken
+	clickBS(xq, yq, 0, 0) ;var für klicken: with und high von goto_%loc%.png rerausfinden und ab mitte mit var klicken
 	
 	return loc_tar
 }
@@ -129,6 +129,8 @@ current_location(prio_loc := "loc_gibsnicht", sl := 50, n := 20) {
 			return "loc_beutel"
 		else if ((gamewin_search_boo("*" n " pictures\loc_screen.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_screen")))
 			return "loc_screen"
+		else if ((gamewin_search_boo("*" n " pictures\loc_tod.png")=0) and (((A_TickCount-t) >= prio_wait) or (prio_loc="loc_tod")))
+			return "loc_tod"
 	}
 	
 	blockinput, off
@@ -143,7 +145,7 @@ gamewin_search_boo(options, waittime := 1) {
 		imagesearch, xq, yq, 0, 0, 1284, 752, %options% ;win size übergeben und eventuell dann bilder skalieren
 
 	save_errorlevel := errorlevel
-	log("gamewin_search_boo: Errorlevel = " errorlevel " und " A_TickCount " " t)
+	;log("gamewin_search_boo: Errorlevel = " errorlevel " und " A_TickCount " " t)
 	errorlevel := save_errorlevel
 	
 	if (errorlevel=2) {
@@ -191,9 +193,46 @@ WinWaitActivate(wintitle) {
 	WinWaitActive, %wintitle%
 }
 
+calib_ticks_start:
+global countsasfasf := 1
+goto, calib_ticks
+return
+
+calib_ticks:
+twefassf := perf_TickCount()
+settimer, calib_cont, % -(1000*((countsasfasf)**(2)))
+return
+
+calib_cont:
+calib_ms := (perf_TickCount()-twefassf)/(1000*((countsasfasf)**(2)))
+log("new calib_ms = " calib_ms)
+countsasfasf += 1
+if (countsasfasf=4)
+	return
+else
+	goto, calib_ticks
+	
+calib_ticks() {
+	t := perf_TickCount()
+	sleep 2000
+	return (perf_TickCount()-t)/2000
+}
+
+mod_monitor(mode) {
+	if (mode="on")
+		a := -1 ; Note for the above: Use -1 in place of 2 to turn the monitor on.
+	else if (mode="off") {
+		Sleep 1000 ; Give user a chance to release keys (in case their release would wake up the monitor again).
+		a := 2
+	} else if (mode="lowpower") {
+		Sleep 1000 ; Give user a chance to release keys (in case their release would wake up the monitor again).
+		a := -1 ; Use 1 in place of 2 to activate the monitor's low-power mode.
+	}
+	SendMessage, 0x112, 0xF170, %a%,, Program Manager  ; 0x112 is WM_SYSCOMMAND, 0xF170 is SC_MONITORPOWER.
+}
 
 humansleep(a) {
-	sleep random(a*0.7, a*1.3)
+	rangesleep(a*0.8, a*1.2)
 }
 
 rangesleep(l, j) {
@@ -201,7 +240,7 @@ rangesleep(l, j) {
 }
 
 log(s) {
-	time = %a_dd%/%a_mm%/%a_yyyy% %a_hour%:%a_min%:%a_sec%
+	time = %a_dd%/%a_mm%/%a_yyyy% %a_hour%:%a_min%:%a_sec%:%a_msec%
 	FileAppend,% "`n" . time . " " . s , flyff_bot.log
 }
 
